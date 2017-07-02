@@ -53,7 +53,7 @@
 
     <div id="login_container" ng-show="!user.loggedUser">
       <input ng-model="user.username" placeholder="Username:" /><br>
-      <button ng-click="loginUser();">Login</button>
+      <button class="btn-primary" ng-click="loginUser();">Login</button>
     </div>
 
     <div id="logged_users_container">
@@ -72,7 +72,7 @@
           <select ng-model="gameSettings.selectedBoardSize" ng-options="(boardSize + ' x ' + boardSize) for boardSize in gameSettings.boardSizes">
           <option value="">Board Size:</option>
         </select><br>
-          <button ng-if="gameSettings.selectedBoardSize > 0" ng-click="createNewGame();">Host Game</button>
+          <button class="btn-primary" ng-if="gameSettings.selectedBoardSize > 0" ng-click="createNewGame();">Host Game</button>
         </div>
 
         <div id="game_select_container" ng-hide="user.isPlaying">
@@ -113,7 +113,7 @@
         <div>
           <input ng-model="user.username" placeholder="Username:" disabled /><br>
           <input ng-model="message.body" placeholder="{{chat.placeholder}}" ng-change="showTyping();" /><br>
-          <button ng-click="submitMessage();">Submit Message</button>
+          <button class="btn-primary" ng-click="submitMessage();">Submit Message</button>
         </div>
 
         <div ng-show="chat_messages.length">
