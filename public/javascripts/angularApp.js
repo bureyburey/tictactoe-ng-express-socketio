@@ -1,13 +1,12 @@
 var app = angular.module("tttApp", ['ui.router']);
 
 var ID = function () {
+    // https://gist.github.com/gordonbrander/2230317
     // Math.random should be unique because of its seeding algorithm.
     // Convert it to base 36 (numbers + letters), and grab the first 9 characters
     // after the decimal.
     return '_' + Math.random().toString(36).substr(2, 9);
 };
-
-
 
 app.factory('socket', function ($rootScope) {
     var socket = io.connect();
@@ -34,9 +33,11 @@ app.factory('socket', function ($rootScope) {
     };
 });
 
-
 app.factory('users', function ($rootScope, socket) {
-
+    /**
+     * users service
+     * hold/manages server changes in users (login/logouts/users retrieval)
+     */
     var obj = {
         users: []
     };
@@ -63,6 +64,7 @@ app.factory('users', function ($rootScope, socket) {
     });
 
     socket.on('logout-user', function (data) {
+        // after 'disconnect' event detected, remove the user from each client list of users
         var index = obj.users.findIndex(function (user) {
             return data.id === user.id;
         });
@@ -73,6 +75,12 @@ app.factory('users', function ($rootScope, socket) {
 });
 
 app.factory('user', function ($rootScope, socket) {
+    /**
+     * user service
+     * hold user identifications variables
+     * game identification object
+     * manages the active game board changes sent from server
+     */
     var obj = {
     };
 
@@ -85,7 +93,6 @@ app.factory('user', function ($rootScope, socket) {
     }
 
     obj.requestGameReset = function () {
-        // alert(JSON.stringify(obj.game, null, 2));
         socket.emit('request-game-reset', {
             id: obj.game.id,
             initiatedBy: obj.socketId,
@@ -111,23 +118,20 @@ app.factory('user', function ($rootScope, socket) {
         obj.isOwner = obj.isOwner || false;
     });
 
-
     socket.on('confirm-reset', function (data) {
         if (confirm("Other Player Requested Game Reset\nAcccept?")) {
             socket.emit('reset-game-board', data.game);
         }
-
-        // if (data.req.initiatedBy !== $scope.currentUser.username) {
-        //     if (confirm("User " + data.req.initiatedBy + " Initiated Game Reset\nReset Game?")) {
-        //         // $scope.resetGame();
-        //     }
-        // }
     });
 
     return obj;
 });
 
 app.factory('chat', function ($rootScope, socket) {
+    /**
+     * chat service
+     * hold/manages server changes in chat messages (new message/user typing/messages retrieval)
+     */
     var obj = {
         chat_messages: [],
         placeholder: "Message:"
@@ -167,7 +171,10 @@ app.factory('chat', function ($rootScope, socket) {
 });
 
 app.factory('games', function ($rootScope, socket) {
-
+    /**
+     * games service
+     * manages active game created by users and waiting for opponent to join
+     */
     var obj = {
         games: []
     };
@@ -182,10 +189,6 @@ app.factory('games', function ($rootScope, socket) {
 
     socket.on('get-all-games', function (data) {
         // iterate all games from server and add only the new ones
-
-        // alert(JSON.stringify(data.games))
-        // alert(data.games.length)
-
         data.games.forEach(function (element) {
             var index = obj.games.findIndex(function (el) {
                 return el.id === element.id;
@@ -197,12 +200,10 @@ app.factory('games', function ($rootScope, socket) {
     });
 
     socket.on('return-new-game', function (data) {
-        // alert(JSON.stringify(data))
         obj.games.unshift(data.game);
     });
 
     socket.on('return-active-game', function (data) {
-        // alert(JSON.stringify(data.game,null,2));
         var index = obj.games.findIndex(function (element) {
             return data.game.id === element.id;
         });
@@ -229,12 +230,10 @@ app.controller('HomeCtrl', [
         $scope.games = games.games;
         $scope.users = users.users;
         $scope.user = user;
-        
+
         $scope.gameSettings = {
-            // preset board size options
-            boardSizes: [3, 4, 5, 6],
-            // selectedBoardSize: tictactoe.rowSize || null,
-            // gameInProgress: false
+            // available preset sizes for game board 
+            boardSizes: [3, 4, 5, 6]
         }
 
         $scope.loginUser = function () {
@@ -291,7 +290,6 @@ app.controller('HomeCtrl', [
                 user.updateBoard(index, user.symbol);
             }
         }
-
     }
 ]);
 
@@ -309,7 +307,7 @@ app.controller('NavCtrl', [
     }
 ]);
 
-
+// routing for each tab in the app navigation bar
 app.config([
     '$stateProvider',
     '$urlRouterProvider',

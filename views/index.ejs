@@ -87,9 +87,7 @@
         <div id="board_container" ng-if="user.isPlaying">
           <h3><span ng-style="{'color': user.game.owner.symbol === user.game.turn? 'green':'red'}">{{user.game.owner.username}}</span>            ({{user.game.owner.symbol}})<br>VS<br><span ng-show="!user.game.opponent">Waiting for opponent...</span>
             <span ng-style="{'color': user.game.opponent.symbol === user.game.turn? 'green':'red'}">{{user.game.opponent.username}}</span>            ({{user.game.opponent.symbol}})</h3>
-          <button class="btn-danger" ng-click="requestGameReset();" ng-disabled="!user.game.opponent">Request Game Reset</button>
-
-
+          <button class="btn-warning" ng-click="requestGameReset();" ng-disabled="!user.game.opponent">Request Game Reset</button>
 
           <div id="container_game_result">
             <h2 ng-if="user.game.winner === 'O'">{{user.game.owner.username}} WINS THE GAME!!!</h2>
@@ -103,9 +101,7 @@
           <b>{{tile.value}}</b>
         </button>
     
-
         </div>
-
       </div>
 
       <div id="chat_container" class="col-xs-6">

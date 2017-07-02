@@ -1,3 +1,8 @@
+/**
+ * Tic Tac Toe game object constructor
+ * 
+ */
+
 function game(owner, id){
     this.id = id;
     this.owner = owner;
