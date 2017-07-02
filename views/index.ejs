@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link rel='stylesheet' href='/node_modules/bootstrap/dist/css/bootstrap.min.css' />
+  <script src="/static_components/array-polyfills/find-index.js"></script>
+  <script src="/static_components/array-polyfills/index-of.js"></script>
+  <script src="/node_modules/angular/angular.js"></script>
+
+  <script src="/node_modules/@uirouter/angularjs/release/angular-ui-router.min.js"></script>
+  <script src="/node_modules/socket.io-client/dist/socket.io.js"></script>
+
+  <script src="/javascripts/angularApp.js"></script>
+</head>
+
+<body ng-app="tttApp">
+  <nav class="nav" ng-controller="NavCtrl">
+    <!--<nav class="navbar navbar-default pull-right" ng-controller="NavCtrl">-->
+    <ul>
+      <!-- 
+                href is sent to angularApp.js ->
+                    app.config ->
+                        $stateProvider ->
+                            choose state by matching URL ->
+                                return templateUrl   
+            -->
+      <li><a href="/#!/home">Home</a></li>
+      <li><a href="/#!/about">About</a></li>
+    </ul>
+  </nav>
+
+
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <!--content of page will be display inside ui-view-->
+      <center>
+        <h1>
+          <%= title %>
+        </h1>
+        <ui-view></ui-view>
+      </center>
+    </div>
+  </div>
+
+  <script type="text/ng-template" id="/home.html">
+    <div class="page-header">
+    </div>
+    <!-- rest of template -->
+
+    <div id="login_container" ng-show="!user.loggedUser">
+      <input ng-model="user.username" placeholder="Username:" /><br>
+      <button ng-click="loginUser();">Login</button>
+    </div>
+
+    <div id="logged_users_container">
+      <h5>Logged Players</h5>
+      <ul>
+        <li ng-repeat="user in users">{{user.username}}</li>
+      </ul>
+    </div>
+
+    <div id="game_container" ng-show="user.loggedUser">
+
+
+      <div id="tictactoe_container" class="col-xs-6">
+        <div id="create_game_container" ng-hide="user.isPlaying">
+          <input ng-model="user.username" placeholder="" disabled /><br>
+          <select ng-model="gameSettings.selectedBoardSize" ng-options="(boardSize + ' x ' + boardSize) for boardSize in gameSettings.boardSizes">
+          <option value="">Board Size:</option>
+        </select><br>
+          <button ng-if="gameSettings.selectedBoardSize > 0" ng-click="createNewGame();">Host Game</button>
+        </div>
+
+        <div id="game_select_container" ng-hide="user.isPlaying">
+          <div ng-repeat="game in games">
+            <label>Game Host: <span>{{game.owner.username}}</span></label><br>
+            <button ng-disabled="user.isPlaying" ng-hide="game.opponent" ng-class="{'btn-success btn-lg': !game.opponent,'btn-danger btn-lg': game.opponent}"
+              ng-click="joinGame(game.id);">Join Game</button>
+            <hr>
+          </div>
+        </div>
+
+        <div id="board_container" ng-if="user.isPlaying">
+          <h3><span ng-style="{'color': user.game.owner.symbol === user.game.turn? 'green':'red'}">{{user.game.owner.username}}</span> ({{user.game.owner.symbol}}) VS <span ng-show="!user.game.opponent">Waiting for opponent...</span><span ng-style="{'color': user.game.opponent.symbol === user.game.turn? 'green':'red'}">{{user.game.opponent.username}}</span>            ({{user.game.opponent.symbol}})</h3>
+          <button class="btn-danger" ng-click="requestGameReset();" ng-disabled="!user.game.opponent">Request Game Reset</button>
+          <span style="display:inline;" ng-repeat="tile in user.game.gameBoard track by $index">
+          <br class="newline-board" ng-if="$index % user.game.rowSize === 0">
+        <button ng-class="{'btn-success btn-lg gameTile': tile.value==='-','btn-danger btn-lg gameTile':tile.value == 'O', 'btn-primary btn-lg gameTile': tile.value==='X'}" ng-click="updateBoard($index);"><b>{{tile.value}}</b></button>
+        </span>
+          <h2 ng-if="user.game.winner">{{user.game.winner}} WINS THE GAME!!!</h2>
+        </div>
+
+      </div>
+
+
+      <div id="chat_container" class="col-xs-6">
+
+        <div>
+          <input ng-model="user.username" placeholder="Username:" disabled /><br>
+          <input ng-model="message.body" placeholder="{{chat.placeholder}}" ng-change="showTyping();" /><br>
+          <button ng-click="submitMessage();">Submit Message</button>
+        </div>
+
+        <div ng-show="chat_messages.length">
+          <h3>Messages</h3>
+          <div ng-repeat="msg in chat_messages">
+            {{ msg.time | date : "dd.MM.y - HH:mm" }}<br> {{ msg.username }}: {{ msg.body }}
+            <hr>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </script>
+
+  <script type="text/ng-template" id="/about.html">
+    <div class="page-header">
+      <h1>About</h1>
+    </div>
+    <!-- rest of template -->
+    <h3>Tic Tac Toe by Bar Galili</h3>
+    Online Multiplayer Tic Tac Toe game<br>
+    Technologies Used:
+    <ul>
+      <li>Client: AngularJS</li>
+      <li>Server: Express.js with Socket.io</li>
+    </ul>
+
+  </script>
+
+
+
+
+</body>
+
+</html>
