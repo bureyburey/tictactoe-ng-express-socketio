@@ -207,29 +207,6 @@ io.on('connection', function (socket) {
         });
     });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // socket.on('disconnect', function () {
-    //     // remove disconnected user (fired on browser refresh/close/navigation to another site)
-    //     console.log(socket.id + ' have disconnected!');
-    //     io.emit('remove-user', {
-    //         message: 'remove-user',
-    //         id: socket.id
-    //     });
-    //     delete clients[socket.id];
-    // });
-
 });
 
 module.exports = socketAPI;
