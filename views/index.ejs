@@ -76,9 +76,9 @@
         </div>
 
         <div id="game_select_container" ng-hide="user.isPlaying">
-          <div ng-repeat="game in games">
+          <div ng-repeat="game in games" ng-hide="game.opponent">
             <label>Game Host: <span>{{game.owner.username}}</span></label><br>
-            <button ng-disabled="user.isPlaying" ng-hide="game.opponent" ng-class="{'btn-success btn-lg': !game.opponent,'btn-danger btn-lg': game.opponent}"
+            <button ng-disabled="user.isPlaying" ng-class="{'btn-success btn-lg': !game.opponent,'btn-danger btn-lg': game.opponent}"
               ng-click="joinGame(game.id);">Join Game</button>
             <hr>
           </div>
